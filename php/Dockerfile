@@ -33,7 +33,8 @@ RUN apt-get update && apt-get upgrade -y \
     libzstd-dev \
     imagemagick \
     git \
-    libsodium-dev
+    libsodium-dev \
+    libgmp-dev
 # 未做 php8的支持, 需要源码安装
 RUN cd ~ && git clone https://github.com/Imagick/imagick.git && cd imagick && phpize && ./configure && make && make install && docker-php-ext-enable imagick
 RUN docker-php-ext-install \
@@ -53,6 +54,7 @@ RUN docker-php-ext-install \
     zend_test \
     intl \
     zip \
+    gmp \
     && docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install gd \
     && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl && docker-php-ext-install imap \
     && pecl install xdebug && docker-php-ext-enable xdebug \
