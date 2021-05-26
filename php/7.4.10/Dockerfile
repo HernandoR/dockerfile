@@ -6,4 +6,5 @@ ADD sources.list /etc/apt/
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
     libgmp-dev
-RUN docker-php-ext-install gmp
+RUN docker-php-ext-install gmp && \
+    docker-php-ext-install shmop
