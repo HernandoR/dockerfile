@@ -121,7 +121,7 @@ for my $suffix (@suffixList){
     if(-e $fileName){
         my $rep = `$fileName`;
         if($rep eq ''){ # 若没有返回, 默认200
-            `response ""`;
+            print(`response ""`);
         }else{
             print($rep);
         }
