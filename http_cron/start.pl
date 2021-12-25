@@ -119,7 +119,12 @@ my @suffixList = ('pl', 'sh', 'bash', 'py', 'php', 'rb');
 for my $suffix (@suffixList){
     my $fileName = "$cronPath.$suffix";
     if(-e $fileName){
-        print(`$fileName`);
+        my $rep = `$fileName`;
+        if($rep eq ''){ # 若没有返回, 默认200
+            `response ""`;
+        }else{
+            print($rep);
+        }
         last;
     }
 }
