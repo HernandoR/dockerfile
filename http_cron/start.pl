@@ -116,6 +116,7 @@ my $cronPath = "$workspace/$cronName";
 
 # 脚本可识别多种脚本
 my @suffixList = ('pl', 'sh', 'bash', 'py', 'php', 'rb');
+my $isFind = 0;
 for my $suffix (@suffixList){
     my $fileName = "$cronPath.$suffix";
     if(-e $fileName){
@@ -125,8 +126,12 @@ for my $suffix (@suffixList){
         }else{
             print($rep);
         }
+        $isFind = 1;
         last;
     }
+}
+if(!$isFind){
+    print(`response --status=404 ""`);
 }
 
 
