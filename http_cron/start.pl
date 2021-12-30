@@ -45,7 +45,13 @@ sub parseQueryParam {
 }
 
 # 定义解析出来的内容
-my ($methodType, $httpVersion, %paramsMap, $requestPath, $queryStr, %headerMap, $formContent);
+my $methodType = '';
+my $httpVersion = '';
+my $formContent = '';
+my $requestPath = '';
+my $queryStr = '';
+my %paramsMap = ();
+my %headerMap = ();
 
 # 按照字节读取输入的所有内容
 # 这里按照字节读取, 是因为输入流的最后有可能不是换行, 如果按照行读取, 可能会缺少数据
@@ -77,7 +83,7 @@ while(1){
         my @splitLine = split(/: /, $line);
         if(scalar @splitLine >= 2){
             # 记录内容长度, 最后读取使用
-            if($splitLine[0] eq 'content-length'){
+            if(lc($splitLine[0]) eq 'content-length'){
                 $contentLen = $splitLine[1];
             }
             $headerMap{$splitLine[0]} = $splitLine[1];
@@ -133,5 +139,3 @@ for my $suffix (@suffixList){
 if(!$isFind){
     print(`response --status=404 ""`);
 }
-
-
