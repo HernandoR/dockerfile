@@ -68,7 +68,7 @@ while(1){
     }
     # 读到一行内容, 将结尾的换行去掉
     $line =~ s/\r\n//;
-    # 已经将头信息读取完毕, 读取剩余 content. 结束读取
+    # 若这里读到的是空行, 说明已经将头信息读取完毕了. 读取剩余 content. 结束读取
     if($line eq ''){
         if($contentLen > 0){
             read(STDIN, $formContent, $contentLen);
