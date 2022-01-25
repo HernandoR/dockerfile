@@ -1,9 +1,7 @@
-# dockerfile
-
 #### 介绍
 
-一些个人的 dockerfile 存储. 
+一个十分方便实现的一个脚本调用的 http 接口
 
-因为在公共镜像上没有找到合适的, 所以自己加了一下
+使用方式: [https://hujingnb.com/archives/729](https://hujingnb.com/archives/729)
 
-当前项目以分支的形式保存镜像, 分支名格式为: `[imageName]/[version]`
+[docker](https://hub.docker.com/r/hujingnb/http_cron)
