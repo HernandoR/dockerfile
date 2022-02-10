@@ -1,9 +1,5 @@
-# dockerfile
+根据订阅地址自动更新与运行的 clash 镜像
 
-#### 介绍
+文档: [https://hujingnb.com/archives/734](https://hujingnb.com/archives/734)
 
-一些个人的 dockerfile 存储. 
-
-因为在公共镜像上没有找到合适的, 所以自己加了一下
-
-当前项目以分支的形式保存镜像, 分支名格式为: `[imageName]/[version]`
+docker: [https://hub.docker.com/r/hujingnb/clash](https://hub.docker.com/r/hujingnb/clash)
