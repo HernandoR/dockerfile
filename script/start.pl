@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings FATAL => 'all';
-
 =pod
     用于接收请求内容并进行调用脚本
 =cut
+
+#==============================================================读取请求内容
 
 # 用于解析请求的第一行
 sub parseFirstLine {
@@ -107,18 +108,22 @@ while(my ($paramKey, $paramValue) = each(%paramsMap)){
 while(my ($headerKey, $headerValue) = each(%headerMap)){
     $ENV{"HEADER_$headerKey"} = $headerValue;
 }
+# 文件用于接收返回的状态码
+my $headerFile = "/var/run/http_cron/add_header_$$";
+my $statusFile = "/var/run/http_cron/status_$$";
+$ENV{'RESP_HEADER_FILE'} = $headerFile;
+$ENV{'RESP_STATUS_FILE'} = $statusFile;
+
+
+#==============================================================调用脚本获取返回
 
 # 根据访问路径调用不同的脚本
 # 将最前面的 / 去掉
 my $cronName = substr($requestPath, 1);
-# 若访问跟路径, 直接返回
-if($cronName eq ''){
-    print(`response --status=404 ""`);
-    exit(0);
-}
 
 my $workspace = $ENV{'WORKSPACE'};
 my $cronPath = "$workspace/$cronName";
+my $respContent = "";
 
 # 脚本可识别多种脚本
 my @suffixList = ('pl', 'sh', 'bash', 'py', 'php', 'rb');
@@ -126,16 +131,97 @@ my $isFind = 0;
 for my $suffix (@suffixList){
     my $fileName = "$cronPath.$suffix";
     if(-e $fileName){
-        my $rep = `$fileName`;
-        if($rep eq ''){ # 若没有返回, 默认200
-            print(`response ""`);
-        }else{
-            print($rep);
-        }
+        $respContent = `$fileName`;
         $isFind = 1;
         last;
     }
 }
 if(!$isFind){
-    print(`response --status=404 ""`);
+    `set-status 404`;
 }
+
+#==============================================================输出结果信息
+
+# 状态信息
+my %statusMsgMap = (
+    100 => 'Continue',
+    101 => 'Switching Protocols',
+    200 => 'OK',
+    201 => 'Created',
+    202 => 'Accepted',
+    203 => 'Non-Authoritative Information;',
+    204 => 'No Content',
+    205 => 'Reset Content',
+    206 => 'Partial Content',
+    300 => 'Multiple Choices',
+    301 => 'Moved Permanently',
+    302 => 'Found',
+    303 => 'Found',
+    304 => 'Not Modified',
+    305 => 'Use Proxy',
+    306 => 'Unused',
+    307 => 'Temporary Redirect',
+    400 => 'Bad Request',
+    401 => 'Unauthorized',
+    402 => 'Payment Required',
+    403 => 'Forbidden',
+    404 => 'Not Found',
+    405 => 'Method Not Allowed',
+    406 => 'Not Acceptable',
+    407 => 'Proxy Authentication Required',
+    408 => 'Request Time-out',
+    409 => 'Conflict',
+    410 => 'Gone',
+    411 => 'Length Required',
+    412 => 'Precondition Failed',
+    413 => 'Request Entity Too Large',
+    414 => 'Request-URI Too Large',
+    415 => 'Unsupported Media Type',
+    416 => 'Requested range not satisfiable',
+    417 => 'Expectation Failed',
+    500 => 'Internal Server Error',
+    501 => 'Not Implemented',
+    502 => 'Bad Gateway',
+    503 => 'Service Unavailable',
+    504 => 'Gateway Time-out',
+    505 => 'HTTP Version not supported',
+);
+
+my %respHeaderMap = ();
+my $respStatus = 200;
+# 读取返回结果并输出
+if(-e $headerFile){
+    open(HEADER_FILE, "<$headerFile");
+    my @headerList = <HEADER_FILE>;
+    my $index = 0;
+    while($index < scalar(@headerList) - 1){
+        my $headerKey = $headerList[$index];
+        my $headerValue = $headerList[$index + 1];
+        $headerKey =~ s/\n//;
+        $headerValue =~ s/\n//;
+        $respHeaderMap{$headerKey} = $headerValue;
+        $index += 2;
+    }
+}
+if(-e $statusFile){
+    open(STATUS_FILE, "<$statusFile");
+    while(<STATUS_FILE>){
+        $respStatus = $_;
+        $respStatus =~ s/\n//;
+    }
+}
+
+# 开始输出
+my $statusMsg = '';
+if(exists($statusMsgMap{$respStatus})){
+    $statusMsg = " $statusMsgMap{$respStatus}";
+}
+print("$httpVersion $respStatus$statusMsg\r\n");
+while(my ($headerKey, $headerValue) = each(%respHeaderMap)){
+    print("$headerKey: $headerValue\r\n");
+}
+print("\r\n");
+print($respContent);
+
+unlink $headerFile;
+unlink $statusFile;
