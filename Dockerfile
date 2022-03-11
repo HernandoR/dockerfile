@@ -1,26 +1,31 @@
-FROM debian:10.10
+FROM nginx:1.21-perl
 
-COPY sources.list /etc/apt/sources.list
-COPY ./script/start.pl /opt/start.pl
-COPY ./script/response.pl /opt/response.pl
+COPY sources.list /etc/apt/
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY ./script/start.bash /opt/start.bash
+COPY ./script/run-request.pl /opt/run/run-request.pl
+COPY ./script/response.pl /bin/response
 COPY ./script/init.bash /opt/init.bash
-COPY ./script/add-header.pl /opt/add-header.pl
-COPY ./script/set-status.pl /opt/set-status.pl
+COPY ./script/add-header.pl /bin/add-header
+COPY ./script/set-status.pl /bin/set-status
+
 
 # 此为脚本运行目录
 ENV WORKSPACE /opt/script
 ENV LISTEN_PORT 80
 
-RUN apt update && apt update && \
-    apt upgrade -y && \
-    apt install -y socat && \
-    chmod +x /opt/start.pl && \
-    chmod +x /opt/response.pl && \
-    chmod +x /opt/add-header.pl && \
-    chmod +x /opt/set-status.pl && \
-    ln -s /opt/response.pl /bin/response && \
-    ln -s /opt/add-header.pl /bin/add-header && \
-    ln -s /opt/set-status.pl /bin/set-status && \
-    mkdir "/var/run/http_cron"
+RUN apt update && apt update \
+    && apt install -y \
+    fcgiwrap \
+    #todo del
+    procps nano \
+    && chmod +x /opt/start.bash \
+    && chmod +x /opt/run/run-request.pl \
+    && chmod +x /bin/response \
+    && chmod +x /opt/init.bash \
+    && chmod +x /bin/add-header \
+    && chmod +x /bin/set-status \
+    && mkdir "/var/run/http_cron"
 
-ENTRYPOINT chmod +x /opt/init.bash && /opt/init.bash && socat TCP4-LISTEN:$LISTEN_PORT,reuseaddr,fork EXEC:/opt/start.pl
+ENTRYPOINT ["/opt/start.bash"]
