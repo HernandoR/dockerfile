@@ -18,8 +18,6 @@ ENV LISTEN_PORT 80
 RUN apt update && apt update \
     && apt install -y \
     fcgiwrap \
-    #todo del
-    procps nano \
     && chmod +x /opt/start.bash \
     && chmod +x /opt/run/run-request.pl \
     && chmod +x /bin/response \
