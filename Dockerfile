@@ -14,6 +14,7 @@ COPY ./script/set-status.pl /bin/set-status
 # 此为脚本运行目录
 ENV WORKSPACE /opt/script
 ENV LISTEN_PORT 80
+ENV CLIENT_BODY_BUFFER_SIZE 8k
 
 RUN apt update && apt update \
     && apt install -y \
