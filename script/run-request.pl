@@ -48,6 +48,13 @@ my $statusFile = "/var/run/http_cron/status_$$";
 $ENV{'RESP_HEADER_FILE'} = $headerFile;
 $ENV{'RESP_STATUS_FILE'} = $statusFile;
 
+# 若请求提文件存在, 则读取其内容并放入环境变量中
+if($ENV{'REQUEST_BODY_FILE'} ne '' && $ENV{'FORM_CONTENT'} eq '' && $ENV{'INIT_FORM_CONTENT'} eq '1'){
+    open(REQUEST_BODY_FILE, "<$ENV{'REQUEST_BODY_FILE'}");
+    my @string = <REQUEST_BODY_FILE>;
+    $ENV{'FORM_CONTENT'} = join('',@string);;
+}
+
 #==============================================================调用脚本获取返回
 
 # 根据访问路径调用不同的脚本

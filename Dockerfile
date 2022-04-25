@@ -14,7 +14,8 @@ COPY ./script/set-status.pl /bin/set-status
 # 此为脚本运行目录
 ENV WORKSPACE /opt/script
 ENV LISTEN_PORT 80
-ENV CLIENT_BODY_BUFFER_SIZE 8k
+# 是否需要将请求从文件中读出来
+ENV INIT_FORM_CONTENT 1
 
 RUN apt update && apt update \
     && apt install -y \

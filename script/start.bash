@@ -10,9 +10,5 @@ nohup fcgiwrap -f -c 4 -s unix:/run/fcgiwrap.socket > /dev/stderr 2>&1 &
 until ls /run/fcgiwrap.socket; do sleep 0.1; done
 chown nginx:nginx /run/fcgiwrap.socket
 
-# 根据环境变量 修改 nginx 配置文件
-sed -i "s/listen 80 default_server;/listen $LISTEN_PORT default_server;/" /etc/nginx/conf.d/default.conf
-sed -i "s/client_body_buffer_size 16k;/client_body_buffer_size $CLIENT_BODY_BUFFER_SIZE;/" /etc/nginx/conf.d/default.conf
-
 # 启动 nginx
 exec /docker-entrypoint.sh nginx -g "daemon off;"
