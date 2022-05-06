@@ -56,6 +56,7 @@ if($ENV{'REQUEST_BODY_FILE'} ne '' && $ENV{'FORM_CONTENT'} eq '' && $ENV{'INIT_F
     if($fileStatLen >= 7){
         my $fileSize = $fileStat[7];
         # 若内容过大, 即使要求读入也不行
+        # 具体见: https://www.perlmonks.org/?node_id=684300
         if($fileSize < 1024*64){
             open(REQUEST_BODY_FILE, "<$ENV{'REQUEST_BODY_FILE'}");
             my @string = <REQUEST_BODY_FILE>;
