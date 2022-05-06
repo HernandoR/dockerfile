@@ -50,9 +50,22 @@ $ENV{'RESP_STATUS_FILE'} = $statusFile;
 
 # 若请求提文件存在, 则读取其内容并放入环境变量中
 if($ENV{'REQUEST_BODY_FILE'} ne '' && $ENV{'FORM_CONTENT'} eq '' && $ENV{'INIT_FORM_CONTENT'} eq '1'){
-    open(REQUEST_BODY_FILE, "<$ENV{'REQUEST_BODY_FILE'}");
-    my @string = <REQUEST_BODY_FILE>;
-    $ENV{'FORM_CONTENT'} = join('',@string);;
+    # 获取文件大小
+    my @fileStat = stat($ENV{'REQUEST_BODY_FILE'});
+    my $fileStatLen = @fileStat;
+    if($fileStatLen >= 7){
+        my $fileSize = $fileStat[7];
+        # 若内容过大, 即使要求读入也不行
+        if($fileSize < 1024*64){
+            open(REQUEST_BODY_FILE, "<$ENV{'REQUEST_BODY_FILE'}");
+            my @string = <REQUEST_BODY_FILE>;
+            $ENV{'FORM_CONTENT'} = join('',@string);;
+        }else{
+            print STDERR "Request body too big, size: $fileSize. Please read content from file. The file name in env REQUEST_BODY_FILE.";
+        }
+    }else{
+        print STDERR "get file size error";
+    }
 }
 
 #==============================================================调用脚本获取返回
