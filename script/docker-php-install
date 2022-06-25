@@ -1,0 +1,38 @@
+#!/bin/sh
+set -e
+
+rm -f -r $PHP_INI_DIR
+rm -f -r $PHP_INSTALL_DIR
+rm -f $PHP_SRC_DIR/Makefile
+
+cd $PHP_SRC_DIR
+./buildconf -f
+./configure --prefix=$PHP_INSTALL_DIR \
+     --enable-phpdbg \
+     --enable-phpdbg-readline  \
+     --with-config-file-path=$PHP_INI_DIR \
+     --with-config-file-scan-dir=$PHP_INI_DIR/conf.d \
+     --with-openssl \
+     --with-pear
+# 下面一行为了解决错误(在gcc编译时添加参数):
+# /usr/bin/ld: sapi/phpdbg/phpdbg_cmd.o: in function `phpdbg_read_input':
+# /root/php-src/sapi/phpdbg/phpdbg_cmd.c:748: undefined reference to `readline'
+# /usr/bin/ld: /root/php-src/sapi/phpdbg/phpdbg_cmd.c:756: undefined reference to `add_history'
+# collect2: error: ld returned 1 exit status
+# make: *** [Makefile:298: sapi/phpdbg/phpdbg] Error 1
+sed -i "s/^EXTRA_LIBS.*/& -lreadline/g" Makefile
+make -j$(nproc)
+make install
+mkdir -p $PHP_INI_DIR/conf.d
+cp $PHP_SRC_DIR/php.ini-development $PHP_INI_DIR/php.ini-development
+cp $PHP_SRC_DIR/php.ini-production $PHP_INI_DIR/php.ini-production
+
+
+# 安装 vld 扩展
+cd /tmp
+wget -O vld-0.17.2.tgz https://pecl.php.net/get/vld-0.17.2.tgz
+pecl install vld-0.17.2.tgz
+rm vld-0.17.2.tgz
+docker-php-ext-enable vld
+echo "vld.active=1" >> $PHP_INI_DIR/conf.d/docker-php-ext-vld.ini
+echo "vld.verbosity=3" >> $PHP_INI_DIR/conf.d/docker-php-ext-vld.ini
