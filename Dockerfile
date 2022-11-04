@@ -13,7 +13,6 @@ COPY ./script/set-status.pl /bin/set-status
 
 # 此为脚本运行目录
 ENV WORKSPACE /opt/script
-ENV LISTEN_PORT 80
 # 是否需要将请求从文件中读出来
 ENV INIT_FORM_CONTENT 1
 # fcgiwrap启动进程数量, 既最大并发数
