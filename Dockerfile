@@ -17,7 +17,7 @@ ENV LISTEN_PORT 80
 # 是否需要将请求从文件中读出来
 ENV INIT_FORM_CONTENT 1
 # fcgiwrap启动进程数量, 既最大并发数
-ENV MAX_CONCURRENT 4
+ENV MAX_CONCURRENT 2
 
 RUN apt update && apt update \
     && apt install -y \
