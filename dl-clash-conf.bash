@@ -13,14 +13,20 @@ then
 fi
 
 # 写入 API端口
-if [[ ! -z "$EXTERNAL_BIND" && ! -z "$EXTERNAL_PORT" ]]
+if [[ ! -z "$EXTERNAL_BIND" ]];
 then
-  echo "external-controller: $EXTERNAL_BIND:$EXTERNAL_PORT" >> $ConfFile
+ EXTERNAL_BIND="127.0.0.1"
 fi
-# 鉴权信息
-if [[ ! -z "$EXTERNAL_SECRET" ]]
+if [[ ! -z "$EXTERNAL_PORT" ]];
 then
-  echo "secret: \"$EXTERNAL_SECRET\"" >> $ConfFile
+ EXTERNAL_PORT="9090"
 fi
-# 必须开启局域网连接, 否则外部无法连接
-echo "allow-lan: true" >> $ConfFile
+if [[ ! -z "$EXTERNAL_SECRET" ]];
+then
+ EXTERNAL_SECRET="\"\""
+fi
+
+sed -i 's|external-controller:.*|external-controller: $EXTERNAL_BIND:$EXTERNAL_PORT|g' $ConfFile
+sed -i 's|secret:.*|secret: "$EXTERNAL_SECRET"|g' $ConfFile
+sed -i 's|allow-lan:.*|allow-lan: true|g' $ConfFile
+
