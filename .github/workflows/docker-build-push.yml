@@ -29,6 +29,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: "${{ secrets.DOCKERHUB_USERNAME }}/clash:${{ env.CLASH_VERSION }}"
+          tags: |
+            clash:${{ env.CLASH_VERSION }}
+            clash:latest
           build-args: |
             CLASH_VERSION: "${{ env.CLASH_VERSION }}"
