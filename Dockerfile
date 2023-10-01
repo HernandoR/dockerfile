@@ -21,7 +21,7 @@ ENV EXTERNAL_PORT "9090"
 ENV EXTERNAL_SECRET ""
 
 RUN apk update \
-    && apt add -y --no-cache \
+    && apk add -y --no-cache \
     wget gzip \
     && gzip -d /opt/clash-linux-amd64-$CLASH_VERSION.gz \
     && chmod +x /opt/clash-linux-amd64-$CLASH_VERSION \
