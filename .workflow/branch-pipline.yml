@@ -1,0 +1,30 @@
+version: '1.0'
+name: branch-pipline
+displayName: docker-build
+triggers:
+  trigger: auto
+  push:
+    branches:
+      prefix:
+        - clash
+stages:
+  - name: stage-615c0830
+    displayName: build
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@docker
+        name: build_docker
+        displayName: 镜像构建
+        type: cert
+        certificate: eded8f10-4225-013c-224e-3684bbb49d7c
+        tag: Clash:Latest
+        dockerfile: ./Dockerfile
+        context: ''
+        artifacts: []
+        isCache: false
+        parameter: {}
+        notify: []
+        strategy:
+          retry: '0'
