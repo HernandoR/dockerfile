@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ConfFile="/root/conf/config.yaml"
+ConfFile="/root/.conf/clash/config.yaml"
 
 dl-clash-conf $ConfFile
 # 启动定时下载配置文件

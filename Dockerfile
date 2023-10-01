@@ -1,6 +1,6 @@
 FROM debian:10
 
-ARG CLASH_VERSION="v1.8.0"
+ARG CLASH_VERSION="v1.18.0"
 
 ADD https://github.com/Dreamacro/clash/releases/download/$CLASH_VERSION/clash-linux-amd64-$CLASH_VERSION.gz /opt/clash-linux-amd64-$CLASH_VERSION.gz
 ADD https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb /root/conf/Country.mmdb
