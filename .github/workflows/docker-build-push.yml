@@ -5,8 +5,7 @@ on:
   push:
     branches:
       - 'clash/Latest'
-
-  
+      
 jobs:
   docker:
     runs-on: ubuntu-latest
