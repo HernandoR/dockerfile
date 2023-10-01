@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # 更新配置文件
 ConfFile=$1
+OverWriteFile=$2
 
 # 不需要更新
 if [[ -z "$EXTERNAL_BIND" || -z "$EXTERNAL_PORT" ]]
@@ -8,7 +9,7 @@ then
   exit 0
 fi
 # 下载文件
-dl-clash-conf $ConfFile
+dl-clash-conf $ConfFile $OverWriteFile
 # 若文件下载失败, 则返回并报错
 if [ $? -ne 0 ];
 then

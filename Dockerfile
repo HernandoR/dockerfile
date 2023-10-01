@@ -2,8 +2,16 @@ FROM alpine:latest
 
 ARG CLASH_VERSION="v1.18.0"
 
+RUN apk update \
+    && apk add -y --no-cache \
+    wget gzip yq bash
+
+
 ADD https://github.com/Dreamacro/clash/releases/download/$CLASH_VERSION/clash-linux-amd64-$CLASH_VERSION.gz /opt/clash-linux-amd64-$CLASH_VERSION.gz
 ADD https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb /root/conf/Country.mmdb
+
+ADD ./config.overwrite.yml /root/config/config.overwrite.yml
+ADD ./extra_rules.yml /root/config/extra_rules.yml
 
 COPY ./run.bash /bin/run
 COPY ./dl-clash-conf.bash /bin/dl-clash-conf
@@ -20,10 +28,8 @@ ENV EXTERNAL_PORT "9090"
 # RESTful API 鉴权
 ENV EXTERNAL_SECRET ""
 
-RUN apk update \
-    && apk add -y --no-cache \
-    wget gzip \
-    && gzip -d /opt/clash-linux-amd64-$CLASH_VERSION.gz \
+
+RUN gzip -d /opt/clash-linux-amd64-$CLASH_VERSION.gz \
     && chmod +x /opt/clash-linux-amd64-$CLASH_VERSION \
     && ln -s /opt/clash-linux-amd64-$CLASH_VERSION /bin/clash \
     && chmod +x /bin/run \
